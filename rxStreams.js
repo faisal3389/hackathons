@@ -1,13 +1,11 @@
 var Rx = require('rxjs/Rx');
 
-var obs = Rx.Observable.of(4,7,6, 1, 9, 2,3);
+var obs = Rx.Observable.interval(500).map(x => ((Math.floor(Math.random() * 100))%100 + 100) %100);
 
 
 
 function newObserver() {
   var observer = { arr: [] };
-
-
 
   observer.next = function(o) {
     var boolMap = this.arr.map(x => x > o);
