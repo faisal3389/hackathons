@@ -6,7 +6,7 @@ function random() {
 }
 
 function createSource() {
-  return Rx.Observable.of('Repeat this!').delay(5).repeat(60).map(random);
+  return Rx.Observable.of('Repeat this!').delay(500).repeat(60).map(random);
 }
 
 function newObserver() {
