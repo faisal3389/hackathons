@@ -1,8 +1,33 @@
 var Rx = require('rxjs/Rx');
 
-var obs = Rx.Observable.interval(500).map(x => ((Math.floor(Math.random() * 100))%100 + 100) %100);
+
+var values = [];
+
+for (var i =0; i<3;i++) {
+  values[i] = [];
+  for (var j=0;j<60; j++) {
+    values[i].push(random());
+  }
+  values[i].current = 0;
+}
+
+function random() {
+  return ((Math.floor(Math.random() * 100))%100 + 100) %100;
+}
 
 
+var obsers = values.map(v => Rx.Observable.interval(500).windowCount(10).map(x => v[x]));
+var obs = obsers[0];
+
+
+
+var source = Rx.Observable.of('Repeat this!').delay(500).repeat(60).map(random);
+var sources = [];
+
+
+function createSource() {
+  return Rx.Observable.of('Repeat this!').delay(500).repeat(60).map(random);
+}
 
 function newObserver() {
   var observer = { arr: [] };
@@ -27,5 +52,8 @@ function newObserver() {
   return observer;
 }
 
+
+
+
 var observer = newObserver();
-obs.subscribe(observer);
+source.subscribe(observer);
