@@ -1,23 +1,11 @@
 var Rx = require('rxjs/Rx');
+var assert = require('assert');
 
 
-var values = [];
-
-for (var i =0; i<3;i++) {
-  values[i] = [];
-  for (var j=0;j<60; j++) {
-    values[i].push(random());
-  }
-  values[i].current = 0;
-}
 
 function random() {
   return ((Math.floor(Math.random() * 100))%100 + 100) %100;
 }
-
-
-var obsers = values.map(v => Rx.Observable.interval(500).windowCount(10).map(x => v[x]));
-var obs = obsers[0];
 
 
 
@@ -29,7 +17,7 @@ for (var i=0; i < 3; i++) {
 
 
 function createSource() {
-  return Rx.Observable.of('Repeat this!').delay(500).repeat(60).map(random);
+  return Rx.Observable.of('Repeat this!').delay(5).repeat(60).map(random);
 }
 
 function newObserver() {
@@ -56,13 +44,21 @@ function newObserver() {
 }
 
 
-
-
 var observer = newObserver();
-// sources.forEach(source => source.subscribe(newObserver()));
 
 var subjects = sources.map(s => {var sub = new Rx.Subject(); s.subscribe(sub); return sub; });
 
-subjects.forEach(s => s.subscribe(newObserver()));
+var observers = subjects.map(s => { var observer = newObserver() ;s.subscribe(observer); return observer; });
 
-Rx.Observable.of(0,1,2).mergeMap(x => subjects[x]).subscribe(newObserver());
+var totalObserver = newObserver();
+var totalSubject = Rx.Observable.of(0,1,2).mergeMap(x => subjects[x])
+totalSubject.subscribe(totalObserver);
+
+
+totalSubject.subscribe({complete: () => {
+  var sum = observers.map(o => o.arr).reduce((merged, o) => merged.concat(o), []).sort((x , y) => x - y);
+  console.log('expected joint array    :' + sum);
+  console.log('actual joint array      :' + totalObserver.arr);
+  assert.deepEqual(totalObserver.arr, sum, 'arrays not matching');
+  console.log('arrays are matching');
+}})
