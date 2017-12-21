@@ -59,7 +59,10 @@ function newObserver() {
 
 
 var observer = newObserver();
-sources.forEach(source => source.subscribe(newObserver()));
+// sources.forEach(source => source.subscribe(newObserver()));
 
+var subjects = sources.map(s => {var sub = new Rx.Subject(); s.subscribe(sub); return sub; });
 
-Rx.Observable.of(0,1,2).mergeMap(x => sources[x]).subscribe(newObserver());
+subjects.forEach(s => s.subscribe(newObserver()));
+
+Rx.Observable.of(0,1,2).mergeMap(x => subjects[x]).subscribe(newObserver());
