@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aditya Gangipamula <adgang@tuta.io>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "^5.5.5"
+  }
 }
